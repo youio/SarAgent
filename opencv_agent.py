@@ -16,7 +16,6 @@ import cv2 as cv
 import random
 from math import radians
 from pynput import keyboard
-import apriltag
 
 """ Import the AutonomousAgent from the Leaderboard. """
 
@@ -42,7 +41,7 @@ class OpenCVagent(AutonomousAgent):
 
         listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
         listener.start()
-        #detector = apriltag.Detector()
+
         """ Add some attributes to store values for the target linear and angular velocity. """
 
         self.current_v = 0
@@ -51,8 +50,6 @@ class OpenCVagent(AutonomousAgent):
         """ Initialize a counter to keep track of the number of simulation steps. """
 
         self.frame = 0
-        self.detector = apriltag.Detector()
-        self.no_tag_detected_count = 0
 
     def use_fiducials(self):
 
@@ -66,13 +63,13 @@ class OpenCVagent(AutonomousAgent):
 
         sensors = {
             carla.SensorPosition.Front: {
-                'camera_active': True, 'light_intensity': 1.0, 'width': '1280', 'height': '720'
+                'camera_active': False, 'light_intensity': 0, 'width': '1280', 'height': '720'
             },
             carla.SensorPosition.FrontLeft: {
                 'camera_active': True, 'light_intensity': 1.0, 'width': '1280', 'height': '720'
             },
             carla.SensorPosition.FrontRight: {
-                'camera_active': True, 'light_intensity': 1.0, 'width': '1280', 'height': '720'
+                'camera_active': False, 'light_intensity': 0, 'width': '1280', 'height': '720'
             },
             carla.SensorPosition.Left: {
                 'camera_active': False, 'light_intensity': 0, 'width': '1280', 'height': '720'
@@ -105,14 +102,8 @@ class OpenCVagent(AutonomousAgent):
 
         """ Let's retrieve the front left camera data from the input_data dictionary using the correct dictionary key. We want the 
         grayscale monochromatic camera data, so we use the 'Grayscale' key. """
-        cam_positions = [
-            carla.SensorPosition.Front, 
-            carla.SensorPosition.FrontLeft, 
-            carla.SensorPosition.FrontRight
-        ]
-        tag_found = False
-        for cam_pos in cam_positions:
-            sensor_data = input_data['Grayscale'].get(cam_pos, None)
+
+        sensor_data = input_data['Grayscale'][carla.SensorPosition.FrontLeft]
 
         """ We need to check that the sensor data is not None before we do anything with it. The date for each camera will be 
         None for every other simulation step, since the cameras operate at 10Hz while the simulator operates at 20Hz. """
@@ -121,67 +112,8 @@ class OpenCVagent(AutonomousAgent):
 
             """ We use OpenCV's imshow method to render the image to screen, the first time this function is called
             it will open a new OpenCV window. Subsequent calls will render to the same window. """
-            image = np.array(sensor_data, dtype=np.uint8)
-            #image = np.array(image)
-            #detector = apriltag.Detector()
-            tags = self.detector.detect(image)
-            if tags:
-                tag_found = True
-                self.no_tag_detected_count = 0
-                for tag in tags:
-                    tag_id = tag.tag_id
-                    center = tag.center
-                    corners = tag.corners
 
-                    print(f"Detected AprilTag {tag_id} at {center}")
-                    for i in range(4):
-                        pt1 = tuple(corners[i].astype(int))
-                        pt2 = tuple(corners[(i + 1) % 4].astype(int))
-                        cv.line(image, pt1, pt2, (0, 255, 0), 2)
-
-                    cv.circle(image, tuple(center.astype(int)), 5, (0, 0, 255), -1)
-
-                    fx, fy = 1000, 1000
-                    cx, cy = 640, 360
-                    tag_size = 0.2
-
-                    object_points = np.array([
-                        [-tag_size / 2, -tag_size / 2, 0],
-                        [tag_size / 2, -tag_size / 2, 0],
-                        [tag_size / 2, tag_size / 2, 0],
-                        [-tag_size / 2, tag_size / 2, 0]
-                    ], dtype=np.float32)
-
-                    image_points = np.array(corners, dtype=np.float32)
-
-                    ret, rvec, tvec = cv.solvePnP(object_points, image_points, 
-                                                  np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]]), 
-                                                  None)
-
-                    if ret:
-                        print(f"AprilTag {tag_id} Pose:")
-                        print(f"Translation (x, y, z): {tvec.ravel()}")
-                        print(f"Rotation Vector: {rvec.ravel()}")
-
-                        R, _ = cv.Rodrigues(rvec)
-                        T = np.hstack((R, tvec))
-                        T = np.vstack((T, [0, 0, 0, 1]))
-
-                        print("Transformation Matrix:")
-                        print(T)
-
-                        tag_world_position = np.array([2.0, 3.0, 0.0, 1.0])
-                        robot_position_world = np.dot(np.linalg.inv(T), tag_world_position)
-                        true_loc = self.get_location()
-                        true_x, true_y, true_z = true_loc.x, true_loc.y, true_loc.z
-                        print(f"Ground Truth Position (GT): ({true_x}, {true_y}, {true_z})")
-                        print(f"Robot Global Position: {robot_position_world[:3]}")
-
-                        error = np.linalg.norm(robot_position_world[:3] - np.array([true_x, true_y, true_z]))
-                        print(f"Localization Error: {error:.4f} meters")
-
-            
-            cv.imshow("AprilTag Detection", image)
+            cv.imshow('Left camera view', sensor_data)
             cv.waitKey(1)
 
             """ If we want to save camera data, we can use OpenCV to create a PNG file for each camera frame. Uncomment 
@@ -190,20 +122,8 @@ class OpenCVagent(AutonomousAgent):
             #cv.imwrite('out/' + str(self.frame) + '.png', self.sensor_data)
 
             """ Increment the frame counter. """
-        if not tag_found:
-            self.no_tag_detected_count += 1
-            print(f"WARNING: No AprilTags detected for {self.no_tag_detected_count} frames!")
 
-            if self.no_tag_detected_count > 5:
-                print("Reorienting robot to search for AprilTags...")
-                self.current_v = 0
-                self.current_w = 0.5
-
-        else:
-            self.current_v = 0.3
-            self.current_w = 0
-        
-        self.frame += 1 
+            self.frame += 1
 
         """ Now we prepare the control instruction to return to the simulator, with our target linear and angular velocity. """
 
