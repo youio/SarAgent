@@ -40,7 +40,7 @@ from point_cloud.generate_pcd import generate_pcd
 import cv2
 
 def get_entry_point():
-    return 'HumanAgent'
+    return 'WPIAgent'
 
 class HumanInterface(object):
 
@@ -443,10 +443,10 @@ class Mapping(object):
             self.global_pcd = np.concatenate((self.global_pcd, local_pcd), axis=0)
         return self.global_pcd
 
-class HumanAgent(AutonomousAgent):
+class WPIAgent(AutonomousAgent):
 
     """
-    Human agent to control the ego vehicle via keyboard
+    WPI agent to control the ego vehicle via keyboard
     """
 
     def setup(self, path_to_conf_file):
