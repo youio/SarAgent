@@ -1,5 +1,10 @@
 import os
 
+# print(os.path.dirname(os.path.realpath(__file__)))
+# append the directory of the current file to the python path
+import sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+
 import cv2
 # import time
 # import argparse
@@ -8,13 +13,33 @@ import numpy as np
 # import torch
 # from tqdm import tqdm
 # import open3d as o3d
+import time
 
-from utils import get_calibration_parameters, calc_depth_map, find_distances, add_depth, Open3dVisualizer, write_ply
+# from utils import write_ply
 # from object_detector import ObjectDetectorAPI
 from disparity_estimator.raftstereo_disparity_estimator import RAFTStereoEstimator
 import vizval
 from ultralytics import YOLO
 apollobot = YOLO("best.pt")
+
+def write_ply(fn, verts, colors):
+    ply_header = '''ply
+    format ascii 1.0
+    element vertex %(vert_num)d
+    property float x
+    property float y
+    property float z
+    property uchar red
+    property uchar green
+    property uchar blue
+    end_header
+    '''
+    out_colors = colors.copy()
+    verts = verts.reshape(-1, 3)
+    verts = np.hstack([verts, out_colors])
+    with open(fn, 'ab') as f:
+        f.write((ply_header % dict(vert_num=len(verts))).encode('utf-8'))
+        np.savetxt(f, verts, fmt='%f %f %f %d %d %d ')
 
 class generate_pcd:
     def __init__(self):
@@ -100,13 +125,13 @@ class generate_pcd:
 
         out_colors = out_colors.reshape(-1, 3)
 
-        path_ply = os.path.join("output/ply/",)
+        path_ply = "/home/vishwas/LunarAutonomyChallenge/agents/point_cloud/output_ply/"
         isExist = os.path.exists(path_ply)
         if not isExist:
             os.makedirs(path_ply)
         print("path_ply: {}".format(path_ply))
 
-        file_name = path_ply + "/" +str(6) + ".ply"
+        file_name = path_ply + "/" +str(round(time.time())) + ".ply"
         print("file_name: {}".format(file_name))
         write_ply(file_name, out_points, out_colors)
 
