@@ -1,0 +1,102 @@
+{
+  "fiducial_groups": {
+    "A": {
+      "top_left": {
+        "position": [0.691, -1.033, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 243
+      },
+      "top_right": {
+        "position": [1.033, -0.691, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 71
+      },
+      "lower_left": {
+        "position": [0.691, -1.033, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 462
+      },
+      "lower_right": {
+        "position": [1.033, -0.691, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 37
+      }
+    },
+    "B": {
+      "top_left": {
+        "position": [1.033, 0.691, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 0
+      },
+      "top_right": {
+        "position": [0.691, 1.033, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 3
+      },
+      "lower_left": {
+        "position": [1.033, 0.691, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 2
+      },
+      "lower_right": {
+        "position": [0.691, 1.033, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 1
+      }
+    },
+    "C": {
+      "top_left": {
+        "position": [-0.691, 1.033, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 10
+      },
+      "top_right": {
+        "position": [-1.033, 0.691, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 11
+      },
+      "lower_left": {
+        "position": [-0.691, 1.033, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 8
+      },
+      "lower_right": {
+        "position": [-1.033, 0.691, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 9
+      }
+    },
+    "D": {
+      "top_left": {
+        "position": [-1.033, -0.691, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 464
+      },
+      "top_right": {
+        "position": [-0.691, -1.033, 0.894],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 459
+      },
+      "lower_left": {
+        "position": [-1.033, -0.691, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 258
+      },
+      "lower_right": {
+        "position": [-0.691, -1.033, 0.412],
+        "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+        "tag_id": 5
+      }
+    }
+  },
+  "charging_antenna": {
+    "position": [0.0, 1.452, 0.509],
+    "orientation": [0.0, 1.0, 0.0]
+  },
+  "locator_fiducial": {
+    "position": [0.0, 0.662, 0.325],
+    "orientation": {"roll": 0.0, "pitch": 0.0, "yaw": 0.0},
+    "tag_id": 69,
+    "size": 0.253
+  }
+}
